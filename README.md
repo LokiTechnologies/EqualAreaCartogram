@@ -30,5 +30,14 @@ However, making equal area cartograms can be a time consuming process - particul
 4. Iterate 3. until all bins only have 1 point in them. This will lead to a matrix that is something like the image below
 ![Post-Shunt Grid](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/grid_post_shunt.png "Post-Shunt Grid")
 
-5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons
+5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons. The algorithm is based on 
 ![Hex Map](./demo_images/map.svg)
+
+### Input
+The input file can be any of the following formats:
+- CSV/Excel*
+- SHP
+- GeoJSON
+- KML
+
+\*if a csv or excel file is used as input, the latitude and longitude of each area must be defined. If you do not know what the latitude and longitude of each area are, use this handy [Google Spreadsheets tool](https://chrome.google.com/webstore/detail/geocode-cells/pkocmaboheckpkcbnnlghnfccjjikmfc?hl=en) and export the end result as a CSV.
