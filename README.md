@@ -23,7 +23,7 @@ However, making equal area cartograms can be a time consuming process - particul
 1. Get the x_coord (latitude) and y_coord (longitude) of each area 
 2. Normalize the x_coords and y_coords to align all points into a rectangular grid with a length that width that you define. This will create a matrix that is something like the image below
 
-![Pre-Shunt Grid](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/ukequalareatilemaps.png "Equal Area Cartogram UK")
+![Pre-Shunt Grid](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/grid_pre_shunt.png "Equal Area Cartogram UK")
 
 3. If a bin (i.e., an x-y coordinate pair) has more than 1 point, select a point from the bin and shunt it to a neighbouring bin if neighbouring bin is empty. If no neighbouring bin is empty find a direction (up, down, left, or right) with the most proportion of empty spaces, shift all existing points in that direction by 1, and then move the selected point into that direction
 
@@ -31,5 +31,4 @@ However, making equal area cartograms can be a time consuming process - particul
 ![Post-Shunt Grid](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/grid_post_shunt.png "Post-Shunt Grid")
 
 5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons
-![Alt text](./demo_images/map.svg)
-<img src="./demo_images/map.svg">
+![Hex Map](./demo_images/map.svg)
