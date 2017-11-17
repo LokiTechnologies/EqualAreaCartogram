@@ -30,7 +30,7 @@ However, making equal area cartograms can be a time consuming process - particul
 4. Iterate 3. until all bins only have 1 point in them. This will lead to a matrix that is something like the image below
 ![Post-Shunt Grid](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/grid_post_shunt.png "Post-Shunt Grid")
 
-5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons. The code for this is based on the excellent [chorogrid library] (https://github.com/Prooffreader/chorogrid) by David Taylor.
+5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons. The code for this is based on the excellent [chorogrid library](https://github.com/Prooffreader/chorogrid) by David Taylor.
 ![Hex Map](./demo_images/map.svg)
 
 ### Input
