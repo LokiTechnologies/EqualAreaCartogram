@@ -17,7 +17,7 @@ Choropleths fail to adequately highlight geographically small areas. This become
 
 ![Equal Area Cartogram UK](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/ukequalareatilemaps.png "Equal Area Cartogram UK")
 
-However, making equal area cartograms can be a time consuming process - particularly for relatively obscure regions where well-designed SVGs of equal area cartograms are not easily available. While there is an excellent [R implementation] (https://github.com/sassalley/hexmapr) for producing these, I could not find a Python implementation. Moreover, the R implementation above creates a contiguous map. This is advantageous for some situations, but can completely destroy resemblance to the real geography of an area for others.
+However, making equal area cartograms can be a time consuming process - particularly for relatively obscure regions where well-designed SVGs of equal area cartograms are not easily available. While there is an [R implementation] (https://github.com/sassalley/hexmapr) for producing these, I could not find a Python implementation. Moreover, the R implementation above creates a contiguous map. This is advantageous for some situations, but can completely destroy resemblance to the real geography of an area for others.
 
 ### Algorithm
 1. Get the x_coord (latitude) and y_coord (longitude) of each area 
@@ -30,7 +30,7 @@ However, making equal area cartograms can be a time consuming process - particul
 4. Iterate 3. until all bins only have 1 point in them. This will lead to a matrix that is something like the image below
 ![Post-Shunt Grid](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/grid_post_shunt.png "Post-Shunt Grid")
 
-5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons. The algorithm is based on 
+5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons. The code for this is based on the excellent [chorogrid library] (https://github.com/Prooffreader/chorogrid) by David Taylor.
 ![Hex Map](./demo_images/map.svg)
 
 ### Input
