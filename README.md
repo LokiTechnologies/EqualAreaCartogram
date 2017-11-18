@@ -10,7 +10,12 @@ _Dense hexmap_
 _Sparse hexmap_
 ![Sparse Hexmap](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/demo_sparse.png "Sparse Hexmap")
 
-Look at [this notebook] (https://) for seeing how this can be used.
+### Usage
+```from eqcart import Cartogram
+cart = Cartogram(input_filepath, name_of_column_w_unique_ids, num_x_grid, num_y_grid)
+cart.make_hex_svg(output_filepath)```
+
+For more details on usage, see [this notebook](https://github.com/rishsriv/equalareacartogram/blob/master/Demo.ipynb)
 
 ### Motivation
 Choropleths fail to adequately highlight geographically small areas. This becomes particularly pertinent when covering elections, where each constituency has the same weight regardless of its geographical size. Equal area cartograms solve this problem, and have been used fairly effectively by a number of news organizations - as shown in the image below (taken from [Richard Brath's excellent blog] (https://richardbrath.wordpress.com/2015/10/15/equal-area-cartograms-and-multivariate-labels/))
@@ -19,7 +24,9 @@ Choropleths fail to adequately highlight geographically small areas. This become
 
 However, making equal area cartograms can be a time consuming process - particularly for relatively obscure regions where well-designed SVGs of equal area cartograms are not easily available. While there is an [R implementation] (https://github.com/sassalley/hexmapr) for producing these, I could not find a Python implementation. Moreover, the R implementation above creates a contiguous map. This is advantageous for some situations, but can completely destroy resemblance to the real geography of an area for others.
 
-### Algorithm
+### Heuristic
+For details on implementation, see [this notebook](https://github.com/rishsriv/equalareacartogram/blob/master/Under%20the%20hood.ipynb)
+
 1. Get the x_coord (latitude) and y_coord (longitude) of each area 
 2. Normalize the x_coords and y_coords to align all points into a rectangular grid with a length that width that you define. This will create a matrix that is something like the image below
 
