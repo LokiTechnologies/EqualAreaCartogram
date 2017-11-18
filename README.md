@@ -24,7 +24,7 @@ geopandas
 ```
 
 ### Contact
-Send me an email at rishabh@loki.ai if you have any questions.
+Send an email at rishabh@loki.ai or tweet at [@srivrish](https://twitter.com/srivrish) if you have any questions.
 
 ### Input
 The input file can be any of the following formats:

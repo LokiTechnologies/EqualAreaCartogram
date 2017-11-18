@@ -24,6 +24,7 @@ class Chorogrid(object):
         assert id_column in self.df.columns, ("{} is not a column in"
             " {}".format(id_column, csv_path))
         self.id_column = id_column
+        self.df[id_column] = self.df[id_column].astype(str)
         self.title = ''
         self.additional_svg = []
         self.additional_offset = [0, 0]
@@ -108,8 +109,8 @@ class Chorogrid(object):
         if show is True:
             display(SVG(svgstring))
    
-    def draw_hex(self, x_column='hex_x', y_column='hex_y', true_rows=True, **kwargs):
-        font_dict = {'font-style': 'normal', 'font-weight': 'normal', 'font-size': '12px', 
+    def draw_hex(self, draw_text=False, x_column='hex_x', y_column='hex_y', true_rows=True, **kwargs):
+        font_dict = {'font-style': 'normal', 'font-weight': 'normal', 'font-size': '10px', 
                      'line-height': '125%', 'text-anchor': 'middle', 'font-family': 'sans-serif', 
                      'letter-spacing': '0px', 'word-spacing': '0px', 'fill-opacity': 1, 
                      'stroke': 'none', 'stroke-width': '1px', 'stroke-linecap': 'butt', 
@@ -117,7 +118,7 @@ class Chorogrid(object):
         spacing_dict = {'margin_left': 10, 'margin_top': 10, 'margin_right': 10,  'margin_bottom': 10,  
                         'cell_width': 15, 'title_y_offset': 0, 'name_y_offset': 0, 'roundedness': 3,  
                         'stroke_width': 0, 'stroke_color': '#ffffff', 'missing_color': '#a0a0a0', 
-                        'gutter': 1, 'missing_font_color': '#000000', 'legend_offset': [0, -10]}
+                        'gutter': 1, 'missing_font_color': '#000000'}
         
         font_dict = self._update_default_dict(font_dict, 'font_dict', kwargs)
         spacing_dict = self._update_default_dict(spacing_dict, 
@@ -182,3 +183,7 @@ class Chorogrid(object):
        
             this_font_style = font_style + ';fill:{}'.format(this_font_color)
             ET.SubElement(self.svg, "polygon", id=id_, points=self._calc_hexagon(x, y, w, true_rows))
+            if draw_text == True:
+                _ = ET.SubElement(self.svg, "text", id="text{}".format(id_), x=str(x+w/2), 
+                    y=str(y + spacing_dict['name_y_offset']), style=this_font_style)
+                _.text =str(id_)

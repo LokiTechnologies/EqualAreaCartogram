@@ -152,10 +152,10 @@ class Cartogram(object):
         self.df['hex_x'] = self.df[self.index_col].apply(lambda x: self.point_position[x]["x_bin"])
         self.df['hex_y'] = self.df[self.index_col].apply(lambda x: self.point_position[x]["y_bin"])
 
-    def make_hex_svg(self, output_fname, show=False):
+    def make_hex_svg(self, output_fname, show=False, draw_text=False):
         self._initialize_grid()
         self._populate_new_grid()
         cg = Chorogrid(self.df, self.df[self.index_col].tolist(), ['#eeeeee']*len(self.df), id_column=self.index_col)
-        cg.draw_hex()
+        cg.draw_hex(draw_text=draw_text)
         cg.done(save_filename=output_fname, show=show)
         return
