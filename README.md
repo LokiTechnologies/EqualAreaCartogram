@@ -2,13 +2,10 @@
 A Python script that converts a Shapefile, GeoJSON, or CSV to an equal area cartogram SVG
 
 ### TL;DR
-Convert Choropleths to Equal Area Hex Gridmaps.
+Python script for creating Equal-Area Hexagonal Cartograms.
 
-_Dense hexmap_
+_Example_
 ![Dense Hexmap](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/demo_dense.png "Dense Hexmap")
-
-_Sparse hexmap_
-![Sparse Hexmap](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/demo_sparse.png "Sparse Hexmap")
 
 ### Usage
 ```python
@@ -19,6 +16,12 @@ cart.make_hex_svg(output_filepath)
 ```
 
 For more details on usage, see [this notebook](https://github.com/rishsriv/equalareacartogram/blob/master/Demo.ipynb)
+
+### Requirements
+```
+pandas
+geopandas
+```
 
 ### Input
 The input file can be any of the following formats:
