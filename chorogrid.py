@@ -1,5 +1,6 @@
 #!/usr/bin/python
-# Filename: Chorogrid.py
+#This is a modified version of a file from David Taylor's excellent chorogrid library
+#The original library is hosted at https://github.com/Prooffreader/chorogrid
 
 import xml.etree.ElementTree as ET
 import pandas as pd
@@ -14,9 +15,9 @@ class Chorogrid(object):
         invalid = set(ids).difference(comparison_set)
         missing = comparison_set.difference(set(ids))
         if len(invalid) > 0:
-            print 'WARNING: The following are not recognized', ' ids: {}'.format(invalid)
+            print('WARNING: The following are not recognized', ' ids: {}'.format(invalid))
         if len(missing) > 0:
-            print 'WARNING: The following ids in the csv are not ', 'included: {}'.format(missing)
+            print('WARNING: The following ids in the csv are not ', 'included: {}'.format(missing))
         self.colors = list(colors)
         self.ids = list(ids)
         self.svglist = []
