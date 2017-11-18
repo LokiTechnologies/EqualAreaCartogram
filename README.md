@@ -11,18 +11,22 @@ _Sparse hexmap_
 ![Sparse Hexmap](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/demo_sparse.png "Sparse Hexmap")
 
 ### Usage
-```from eqcart import Cartogram
+```python
+from eqcart import Cartogram
+#input_filepath can be the location of a GeoJSON, SHP, CSV, or Excel File
 cart = Cartogram(input_filepath, name_of_column_w_unique_ids, num_x_grid, num_y_grid)
-cart.make_hex_svg(output_filepath)```
+cart.make_hex_svg(output_filepath)
+```
 
 For more details on usage, see [this notebook](https://github.com/rishsriv/equalareacartogram/blob/master/Demo.ipynb)
 
-### Motivation
-Choropleths fail to adequately highlight geographically small areas. This becomes particularly pertinent when covering elections, where each constituency has the same weight regardless of its geographical size. Equal area cartograms solve this problem, and have been used fairly effectively by a number of news organizations - as shown in the image below (taken from [Richard Brath's excellent blog] (https://richardbrath.wordpress.com/2015/10/15/equal-area-cartograms-and-multivariate-labels/))
+### Input
+The input file can be any of the following formats:
+- CSV/Excel*
+- SHP
+- GeoJSON
 
-![Equal Area Cartogram UK](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/ukequalareatilemaps.png "Equal Area Cartogram UK")
-
-However, making equal area cartograms can be a time consuming process - particularly for relatively obscure regions where well-designed SVGs of equal area cartograms are not easily available. While there is an [R implementation] (https://github.com/sassalley/hexmapr) for producing these, I could not find a Python implementation. Moreover, the R implementation above creates a contiguous map. This is advantageous for some situations, but can completely destroy resemblance to the real geography of an area for others.
+\*if a csv or excel file is used as input, `latitude` and `longitude` columns that represent the latitude and longitude of each area must be present. If you do not know what the latitude and longitude of each area are, use this handy [Google Spreadsheets tool](https://chrome.google.com/webstore/detail/geocode-cells/pkocmaboheckpkcbnnlghnfccjjikmfc?hl=en) and export the end result as a CSV.
 
 ### Heuristic
 For details on implementation, see [this notebook](https://github.com/rishsriv/equalareacartogram/blob/master/Under%20the%20hood.ipynb)
@@ -40,10 +44,9 @@ For details on implementation, see [this notebook](https://github.com/rishsriv/e
 5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons. The code for this is based on the excellent [chorogrid library](https://github.com/Prooffreader/chorogrid) by David Taylor.
 ![Hex Map](./demo_images/map.svg)
 
-### Input
-The input file can be any of the following formats:
-- CSV/Excel*
-- SHP
-- GeoJSON
+### Motivation
+Choropleths fail to adequately highlight geographically small areas. This becomes particularly pertinent when covering elections, where each constituency has the same weight regardless of its geographical size. Equal area cartograms solve this problem, and have been used fairly effectively by a number of news organizations - as shown in the image below (taken from [Richard Brath's excellent blog] (https://richardbrath.wordpress.com/2015/10/15/equal-area-cartograms-and-multivariate-labels/))
 
-\*if a csv or excel file is used as input, `latitude` and `longitude` columns that represent the latitude and longitude of each area must be present. If you do not know what the latitude and longitude of each area are, use this handy [Google Spreadsheets tool](https://chrome.google.com/webstore/detail/geocode-cells/pkocmaboheckpkcbnnlghnfccjjikmfc?hl=en) and export the end result as a CSV.
+![Equal Area Cartogram UK](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/ukequalareatilemaps.png "Equal Area Cartogram UK")
+
+However, making equal area cartograms can be a time consuming process - particularly for relatively obscure regions where well-designed SVGs of equal area cartograms are not easily available. While there is an [R implementation] (https://github.com/sassalley/hexmapr) for producing these, I could not find a Python implementation. Moreover, the R implementation above creates a contiguous map. This is advantageous for some situations, but can completely destroy resemblance to the real geography of an area for others.
