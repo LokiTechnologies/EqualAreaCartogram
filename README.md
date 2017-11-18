@@ -38,6 +38,5 @@ The input file can be any of the following formats:
 - CSV/Excel*
 - SHP
 - GeoJSON
-- KML
 
 \*if a csv or excel file is used as input, `latitude` and `longitude` columns that represent the latitude and longitude of each area must be present. If you do not know what the latitude and longitude of each area are, use this handy [Google Spreadsheets tool](https://chrome.google.com/webstore/detail/geocode-cells/pkocmaboheckpkcbnnlghnfccjjikmfc?hl=en) and export the end result as a CSV.
