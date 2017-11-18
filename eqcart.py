@@ -15,6 +15,18 @@ def read_file(fname):
     return df
 
 class Cartogram(object):
+    """ An object which makes equal-area hexgrid cartograms, instantiated with:
+            input_fname: the path to a csv, excel, geojson, or shp file
+            id_col: a unique attribute/column in the input file that will be used as the id of an SVG
+            num_x_grid: the width of the hexgrid
+            num_y_grid: the height of the hexgrid
+            
+        Methods (introspect to see arguments)
+           make_hex_svg: make choropleth
+           
+           done: save and/or display the result in IPython notebook
+           done_with_overlay: overlay two Chorogrid objects
+    """
     def __init__(self, input_fname, id_col, num_x_grid, num_y_grid):
         self.df = read_file(input_fname)
         assert id_col in self.df.columns, ("{} is not a column in {}".format(id_col, input_fname))
@@ -31,7 +43,9 @@ class Cartogram(object):
             self.df['latitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[0][0])
             self.df['longitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[1][0])
 
+    #methods called from within methods, beginning with underscore
     def _initialize_grid(self):
+        #initializes the grid
         assert (self.num_x_grid * self.num_y_grid) > self.df.shape[0], ("Too few dimensions")
         xmax, xmin = self.df['latitude'].max(), self.df['latitude'].min()
         ymax, ymin = self.df['longitude'].max(), self.df['longitude'].min()
@@ -42,17 +56,20 @@ class Cartogram(object):
         self.df["y_bin"] = self.df["longitude"].apply(lambda y: int(self.num_y_grid*(ymax-y)/y_range))
 
     def _is_valid(self):
+        #checks is any square in the grid has more than 1 point assigned to it
         for coord in self.coord_points:
             if len(self.coord_points[coord]) > 1:
                 return False
         return True
 
     def _delete_old_point(self, x, y, ac_to_shunt):
+        #deletes a point from the grid
         self.coord_points[str(x) + "_" + str(y)].remove(ac_to_shunt)
         self.x_coords_points[x].remove(ac_to_shunt)
         self.y_coords_points[y].remove(ac_to_shunt)
 
     def _update_new_point(self, x, y, ac_to_shunt):
+        #adds a point to the grid
         self.point_position[ac_to_shunt] = {"x_bin": x, "y_bin": y}
         if str(x) + "_" + str(y) not in self.coord_points:
             self.coord_points[str(x) + "_" + str(y)] = []
@@ -66,6 +83,7 @@ class Cartogram(object):
         self.y_coords_points[y].append(ac_to_shunt)
 
     def _shunt_point(self, coord):
+        #moves a point in the grid
         x, y = coord.split('_')
         ac_to_shunt = self.coord_points[coord][1]
         x = int(x)
@@ -129,6 +147,7 @@ class Cartogram(object):
             return
 
     def _populate_new_grid(self):
+        #shifts points in the grid such that no x, y pair in the grid has more than 1 point, while maintaining geographic resemblance
         self.point_position = self.df.set_index(self.index_col)[['x_bin', 'y_bin']].to_dict(orient='index')
 
         for point in self.point_position:
@@ -153,6 +172,11 @@ class Cartogram(object):
         self.df['hex_y'] = self.df[self.index_col].apply(lambda x: self.point_position[x]["y_bin"])
 
     def make_hex_svg(self, output_fname, show=False, draw_text=False):
+        """ Outputs an SVG file of the hexgrid
+            output_fname: the outputfilepath
+            show: whether or not the output should be displayed in the ipython notebook
+            draw_text: whether or not the id_col text should be drawn on the map
+        """
         self._initialize_grid()
         self._populate_new_grid()
         cg = Chorogrid(self.df, self.df[self.index_col].tolist(), ['#eeeeee']*len(self.df), id_column=self.index_col)
