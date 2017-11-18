@@ -35,7 +35,7 @@ The input file can be any of the following formats:
 For details on implementation, see [this notebook](https://github.com/rishsriv/equalareacartogram/blob/master/Under%20the%20hood.ipynb)
 
 1. Get the x_coord (latitude) and y_coord (longitude) of each area 
-2. Normalize the x_coords and y_coords to align all points into a rectangular grid with a length that width that you define. This will create a matrix that is something like the image below
+2. Normalize the x_coords and y_coords to align all points into a rectangular grid with a length and width that you define. This will create a matrix that is something like the image below
 
 ![Pre-Shunt Grid](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/grid_pre_shunt.png "Equal Area Cartogram UK")
 
