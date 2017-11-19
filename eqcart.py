@@ -10,16 +10,16 @@ class Cartogram(object):
             id_col: a unique attribute/column in the input file that will be used as the id of an SVG
             num_x_grid: the width of the hexgrid
             num_y_grid: the height of the hexgrid
-            
+
         Methods (introspect to see arguments)
            make_hex_svg: make choropleth
-           
+
            done: save and/or display the result in IPython notebook
            done_with_overlay: overlay two Chorogrid objects
     """
 
     def __init__(self, input_fname, id_col, num_x_grid, num_y_grid):
-        self.df = read_file(input_fname)
+        self.df = self.read_file(input_fname)
         assert id_col in self.df.columns, ("{} is not a column in {}".format(id_col, input_fname))
         self.index_col = id_col
         self.num_x_grid = num_x_grid
