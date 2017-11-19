@@ -1,18 +1,8 @@
-from chorogrid import Chorogrid
+import geopandas as gpd  # not needed if loading from csv or excel
 import pandas as pd
-import geopandas as gpd #not needed if loading from csv or excel
 
-def read_file(fname):
-    if fname.endswith(".csv"):
-        self.df = pd.read_csv(fname)
-    elif fname.endswith(".xls") or fname.endswith(".xlsx"):
-        df = pd.read_excel(fname)
-    else:
-        try:
-            df = gpd.read_file(fname)
-        except Exception as e:
-            raise Exception(e)
-    return df
+from chorogrid import Chorogrid
+
 
 class Cartogram(object):
     """ An object which makes equal-area hexgrid cartograms, instantiated with:
@@ -27,6 +17,7 @@ class Cartogram(object):
            done: save and/or display the result in IPython notebook
            done_with_overlay: overlay two Chorogrid objects
     """
+
     def __init__(self, input_fname, id_col, num_x_grid, num_y_grid):
         self.df = read_file(input_fname)
         assert id_col in self.df.columns, ("{} is not a column in {}".format(id_col, input_fname))
@@ -37,39 +28,51 @@ class Cartogram(object):
         self.x_coords_points = {}
         self.y_coords_points = {}
         self.point_position = {}
-        
+
         if "latitude" not in self.df.columns or "longitude" not in self.df.columns:
             self.df['centroid'] = self.df['geometry'].apply(lambda x: x.centroid)
             self.df['latitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[0][0])
             self.df['longitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[1][0])
 
-    #methods called from within methods, beginning with underscore
+    # methods called from within methods, beginning with underscore
     def _initialize_grid(self):
-        #initializes the grid
-        assert (self.num_x_grid * self.num_y_grid) > self.df.shape[0], ("Too few dimensions")
+        # initializes the grid
+        assert (self.num_x_grid * self.num_y_grid) > self.df.shape[0], "Too few dimensions"
         xmax, xmin = self.df['latitude'].max(), self.df['latitude'].min()
         ymax, ymin = self.df['longitude'].max(), self.df['longitude'].min()
         x_range = xmax - xmin
         y_range = ymax - ymin
 
-        self.df["x_bin"] = self.df["latitude"].apply(lambda x: int(self.num_x_grid*(x - xmin)/x_range))
-        self.df["y_bin"] = self.df["longitude"].apply(lambda y: int(self.num_y_grid*(ymax-y)/y_range))
+        self.df["x_bin"] = self.df["latitude"].apply(lambda x: int(self.num_x_grid * (x - xmin) / x_range))
+        self.df["y_bin"] = self.df["longitude"].apply(lambda y: int(self.num_y_grid * (ymax - y) / y_range))
+
+    def read_file(self, fname):
+        if fname.endswith(".csv"):
+            self.df = pd.read_csv(fname)
+        elif fname.endswith(".xls") or fname.endswith(".xlsx"):
+            df = pd.read_excel(fname)
+        else:
+            try:
+                df = gpd.read_file(fname)
+            except Exception as e:
+                raise Exception(e)
+        return df
 
     def _is_valid(self):
-        #checks is any square in the grid has more than 1 point assigned to it
+        # checks is any square in the grid has more than 1 point assigned to it
         for coord in self.coord_points:
             if len(self.coord_points[coord]) > 1:
                 return False
         return True
 
     def _delete_old_point(self, x, y, ac_to_shunt):
-        #deletes a point from the grid
+        # deletes a point from the grid
         self.coord_points[str(x) + "_" + str(y)].remove(ac_to_shunt)
         self.x_coords_points[x].remove(ac_to_shunt)
         self.y_coords_points[y].remove(ac_to_shunt)
 
     def _update_new_point(self, x, y, ac_to_shunt):
-        #adds a point to the grid
+        # adds a point to the grid
         self.point_position[ac_to_shunt] = {"x_bin": x, "y_bin": y}
         if str(x) + "_" + str(y) not in self.coord_points:
             self.coord_points[str(x) + "_" + str(y)] = []
@@ -83,71 +86,80 @@ class Cartogram(object):
         self.y_coords_points[y].append(ac_to_shunt)
 
     def _shunt_point(self, coord):
-        #moves a point in the grid
+        # moves a point in the grid
         x, y = coord.split('_')
         ac_to_shunt = self.coord_points[coord][1]
         x = int(x)
         y = int(y)
 
-        #check if a neighbouring bin is empty and move to neighbouring bin
-        for point in [(min(x+1, self.num_x_grid), y), (min(x+1, self.num_x_grid), min(y+1, self.num_y_grid)), (min(x+1, self.num_x_grid), max(0, y-1)), 
-                      (max(0, x-1), y), (max(0, x-1), min(y+1, self.num_y_grid)), (max(0, x-1), max(0, y-1)), 
-                      (x, min(y+1, self.num_y_grid)), (x, max(0, y-1))]:
+        # check if a neighbouring bin is empty and move to neighbouring bin
+        for point in [(min(x + 1, self.num_x_grid), y), (min(x + 1, self.num_x_grid), min(y + 1, self.num_y_grid)),
+                      (min(x + 1, self.num_x_grid), max(0, y - 1)),
+                      (max(0, x - 1), y), (max(0, x - 1), min(y + 1, self.num_y_grid)), (max(0, x - 1), max(0, y - 1)),
+                      (x, min(y + 1, self.num_y_grid)), (x, max(0, y - 1))]:
             if len(self.coord_points.get(str(point[0]) + "_" + str(point[1]), [])) == 0:
-                #delete old point
+                # delete old point
                 self._delete_old_point(x, y, ac_to_shunt)
 
-                #add new point
+                # add new point
                 self._update_new_point(point[0], point[1], ac_to_shunt)
                 return
 
-        #move to a neighbouring bin in the direction that is most sparse
-        prop_x_plus_empty = 1.*len([i for i in range(x+1, 51) if len(self.coord_points.get(str(i) + "_%d"%y, [])) == 0])/(self.num_x_grid-x) if x != self.num_x_grid else 0
-        prop_x_minus_empty = 1.*len([i for i in range(x-1, -1, -1) if len(self.coord_points.get(str(i) + "_%d"%y, [])) == 0])/(x) if x != 0 else 0
+        # move to a neighbouring bin in the direction that is most sparse
+        prop_x_plus_empty = 1. * len(
+            [i for i in range(x + 1, 51) if len(self.coord_points.get(str(i) + "_%d" % y, [])) == 0]) / (
+                                self.num_x_grid - x) if x != self.num_x_grid else 0
+        prop_x_minus_empty = 1. * len(
+            [i for i in range(x - 1, -1, -1) if len(self.coord_points.get(str(i) + "_%d" % y, [])) == 0]) / (
+                                 x) if x != 0 else 0
 
-        prop_y_plus_empty = 1.*len([i for i in range(y+1, 41) if len(self.coord_points.get("%d_"%x + str(i), [])) == 0])/(self.num_y_grid-y) if y != self.num_y_grid else 0
-        prop_y_minus_empty = 1.*len([i for i in range(y-1, -1, -1) if len(self.coord_points.get("%d_"%x + str(i), [])) == 0])/(y) if y != 0 else 0
+        prop_y_plus_empty = 1. * len(
+            [i for i in range(y + 1, 41) if len(self.coord_points.get("%d_" % x + str(i), [])) == 0]) / (
+                                self.num_y_grid - y) if y != self.num_y_grid else 0
+        prop_y_minus_empty = 1. * len(
+            [i for i in range(y - 1, -1, -1) if len(self.coord_points.get("%d_" % x + str(i), [])) == 0]) / (
+                                 y) if y != 0 else 0
 
         self._delete_old_point(x, y, ac_to_shunt)
         if prop_x_plus_empty is max(prop_x_plus_empty, prop_x_minus_empty, prop_y_plus_empty, prop_y_minus_empty):
-            for idx in range(x+1, 51)[::-1]:
+            for idx in range(x + 1, 51)[::-1]:
                 if str(idx) + "_" + str(y) in self.coord_points:
                     for ac in self.coord_points[str(idx) + "_" + str(y)]:
                         self._delete_old_point(idx, y, ac)
-                        self._update_new_point(min(idx+1, self.num_x_grid), y, ac)
+                        self._update_new_point(min(idx + 1, self.num_x_grid), y, ac)
 
-            self._update_new_point(min(x+1, self.num_x_grid), y, ac_to_shunt)
+            self._update_new_point(min(x + 1, self.num_x_grid), y, ac_to_shunt)
             return
         if prop_x_minus_empty is max(prop_x_plus_empty, prop_x_minus_empty, prop_y_plus_empty, prop_y_minus_empty):
-            for idx in range(x-1, -1, -1)[::-1]:
+            for idx in range(x - 1, -1, -1)[::-1]:
                 if str(idx) + "_" + str(y) in self.coord_points:
                     for ac in self.coord_points[str(idx) + "_" + str(y)]:
                         self._delete_old_point(idx, y, ac)
-                        self._update_new_point(max(idx-1, 0), y, ac)
+                        self._update_new_point(max(idx - 1, 0), y, ac)
 
-            self._update_new_point(max(x-1, 0), y, ac_to_shunt)
+            self._update_new_point(max(x - 1, 0), y, ac_to_shunt)
             return
         if prop_y_plus_empty is max(prop_x_plus_empty, prop_x_minus_empty, prop_y_plus_empty, prop_y_minus_empty):
-            for idx in range(y+1, 41)[::-1]:
+            for idx in range(y + 1, 41)[::-1]:
                 if str(x) + "_" + str(idx) in self.coord_points:
                     for ac in self.coord_points[str(x) + "_" + str(idx)]:
                         self._delete_old_point(x, idx, ac)
-                        self._update_new_point(x, min(idx+1, self.num_y_grid), ac)
+                        self._update_new_point(x, min(idx + 1, self.num_y_grid), ac)
 
-            self._update_new_point(x, min(y+1, self.num_y_grid), ac_to_shunt)
+            self._update_new_point(x, min(y + 1, self.num_y_grid), ac_to_shunt)
             return
         if prop_y_minus_empty is max(prop_x_plus_empty, prop_x_minus_empty, prop_y_plus_empty, prop_y_minus_empty):
-            for idx in range(y-1, -1, -1)[::-1]:
+            for idx in range(y - 1, -1, -1)[::-1]:
                 if str(x) + "_" + str(idx) in self.coord_points:
                     for ac in self.coord_points[str(x) + "_" + str(idx)]:
                         self._delete_old_point(x, idx, ac)
-                        self._update_new_point(x, max(idx-1, 0), ac)
+                        self._update_new_point(x, max(idx - 1, 0), ac)
 
-            self._update_new_point(x, max(y-1, 0), ac_to_shunt)
+            self._update_new_point(x, max(y - 1, 0), ac_to_shunt)
             return
 
     def _populate_new_grid(self):
-        #shifts points in the grid such that no x, y pair in the grid has more than 1 point, while maintaining geographic resemblance
+        # shifts points in the grid such that no x, y pair in the grid has more than 1 point, while maintaining geographic resemblance
         self.point_position = self.df.set_index(self.index_col)[['x_bin', 'y_bin']].to_dict(orient='index')
 
         for point in self.point_position:
@@ -179,7 +191,7 @@ class Cartogram(object):
         """
         self._initialize_grid()
         self._populate_new_grid()
-        cg = Chorogrid(self.df, self.df[self.index_col].tolist(), ['#eeeeee']*len(self.df), id_column=self.index_col)
+        cg = Chorogrid(self.df, self.df[self.index_col].tolist(), ['#eeeeee'] * len(self.df), id_column=self.index_col)
         cg.draw_hex(draw_text=draw_text)
         cg.done(save_filename=output_fname, show=show)
         return
