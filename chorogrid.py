@@ -23,7 +23,7 @@ class Chorogrid(object):
         self.ids = list(ids)
         self.svglist = []
         assert id_column in self.df.columns, ("{} is not a column in"
-                                              " {}".format(id_column, csv_path))
+                                              " {}".format(id_column))
         self.id_column = id_column
         self.df[id_column] = self.df[id_column].astype(str)
         self.title = ''
