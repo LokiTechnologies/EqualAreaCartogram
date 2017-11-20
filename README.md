@@ -55,4 +55,4 @@ Choropleths fail to adequately highlight geographically small areas. This become
 
 ![Equal Area Cartogram UK](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/ukequalareatilemaps.png "Equal Area Cartogram UK")
 
-However, making equal area cartograms can be a time consuming process - particularly for relatively obscure regions where well-designed SVGs of equal area cartograms are not easily available. While there is an [R implementation](https://github.com/sassalley/hexmapr) for producing these, I could not find a Python implementation. Moreover, the R implementation above creates a contiguous map. This is advantageous for some situations, but can completely destroy resemblance to the real geography of an area for others.
+However, making equal area cartograms can be a time consuming process - particularly for relatively obscure regions where well-designed SVGs of equal area cartograms are not easily available. While there is an [R implementation](https://github.com/sassalley/hexmapr) for producing these, I could not find a Python implementation.
