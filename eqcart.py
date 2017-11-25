@@ -33,6 +33,8 @@ class Cartogram(object):
             self.df['centroid'] = self.df['geometry'].apply(lambda x: x.centroid)
             self.df['latitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[0][0])
             self.df['longitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[1][0])
+        #else:
+        #    self.df['latitude'], self.df['longitude'] = self.df['longitude'], self.df['latitude'] #ugly hack until bug is fixed
 
     # methods called from within methods, beginning with underscore
     def _initialize_grid(self):
@@ -48,7 +50,7 @@ class Cartogram(object):
 
     def read_file(self, fname):
         if fname.endswith(".csv"):
-            self.df = pd.read_csv(fname)
+            df = pd.read_csv(fname)
         elif fname.endswith(".xls") or fname.endswith(".xlsx"):
             df = pd.read_excel(fname)
         else:
