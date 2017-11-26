@@ -31,22 +31,20 @@ class Cartogram(object):
 
         if "latitude" not in self.df.columns or "longitude" not in self.df.columns:
             self.df['centroid'] = self.df['geometry'].apply(lambda x: x.centroid)
-            self.df['latitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[0][0])
-            self.df['longitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[1][0])
-        #else:
-        #    self.df['latitude'], self.df['longitude'] = self.df['longitude'], self.df['latitude'] #ugly hack until bug is fixed
+            self.df['longitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[0][0])
+            self.df['latitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[1][0])
 
     # methods called from within methods, beginning with underscore
     def _initialize_grid(self):
         # initializes the grid
         assert (self.num_x_grid * self.num_y_grid) > self.df.shape[0], "Too few dimensions"
-        xmax, xmin = self.df['latitude'].max(), self.df['latitude'].min()
-        ymax, ymin = self.df['longitude'].max(), self.df['longitude'].min()
+        xmax, xmin = self.df['longitude'].max(), self.df['longitude'].min()
+        ymax, ymin = self.df['latitude'].max(), self.df['latitude'].min()
         x_range = xmax - xmin
         y_range = ymax - ymin
 
-        self.df["x_bin"] = self.df["latitude"].apply(lambda x: int(self.num_x_grid * (x - xmin) / x_range))
-        self.df["y_bin"] = self.df["longitude"].apply(lambda y: int(self.num_y_grid * (ymax - y) / y_range))
+        self.df["x_bin"] = self.df["longitude"].apply(lambda x: int(self.num_x_grid * (x - xmin) / x_range))
+        self.df["y_bin"] = self.df["latitude"].apply(lambda y: int(self.num_y_grid * (ymax - y) / y_range))
 
     def read_file(self, fname):
         if fname.endswith(".csv"):
