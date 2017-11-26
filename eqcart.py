@@ -1,8 +1,8 @@
-import geopandas as gpd  # not needed if loading from csv or excel
+import geopandas as gpd
 import pandas as pd
-
 from chorogrid import Chorogrid
-
+from bs4 import BeautifulSoup
+import json
 
 class Cartogram(object):
     """ An object which makes equal-area hexgrid cartograms, instantiated with:
@@ -33,6 +33,10 @@ class Cartogram(object):
             self.df['centroid'] = self.df['geometry'].apply(lambda x: x.centroid)
             self.df['longitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[0][0])
             self.df['latitude'] = self.df['centroid'].apply(lambda x: x.coords.xy[1][0])
+        self.max_longitude = self.df['longitude'].max()
+        self.max_latitude = self.df['latitude'].max()
+        self.min_longitude = self.df['longitude'].min()
+        self.min_latitude = self.df['latitude'].min()
 
     # methods called from within methods, beginning with underscore
     def _initialize_grid(self):
@@ -183,7 +187,7 @@ class Cartogram(object):
         self.df['hex_x'] = self.df[self.index_col].apply(lambda x: self.point_position[x]["x_bin"])
         self.df['hex_y'] = self.df[self.index_col].apply(lambda x: self.point_position[x]["y_bin"])
 
-    def make_hex_svg(self, output_fname, show=False, draw_text=False):
+    def make_hex_svg(self, output_fname=None, show=False, draw_text=False):
         """ Outputs an SVG file of the hexgrid
             output_fname: the outputfilepath
             show: whether or not the output should be displayed in the ipython notebook
@@ -194,4 +198,34 @@ class Cartogram(object):
         cg = Chorogrid(self.df, self.df[self.index_col].tolist(), ['#eeeeee'] * len(self.df), id_column=self.index_col)
         cg.draw_hex(draw_text=draw_text)
         cg.done(save_filename=output_fname, show=show)
+        self.total_width = cg.total_width
+        self.total_height = cg.total_height
+        self.svgstring = cg.svgstring
         return
+
+    def _convert_coord_to_latlong(self, point):
+        #converts the coordinate system to an approximate lat-long system
+        #works fairly well for areas that are around the size of Europe, but not too well for larger areas
+        point = [[float(j) for j in i.split(",")] for i in point]
+        point = [[self.min_latitude + (self.max_latitude - self.min_latitude)*(i[0])/self.total_height,
+                  self.min_longitude + (self.max_longitude - self.min_longitude)*(1.*self.total_width - i[1])/(self.total_width)] for i in point]
+        return point
+
+    def make_hex_geojson(self, output_fname):
+        self.make_hex_svg()
+        dom = BeautifulSoup(self.svgstring, "lxml")
+        polygons = dom.findAll("polygon")
+        features = []
+        for polygon in polygons:
+            features.append({"geometry": {
+                "type": "Polygon",
+                "coordinates": [self._convert_coord_to_latlong(polygon.attrs['points'].split())]
+            },
+            "type": "Feature",
+            "id": polygon.attrs["id"],
+            "properties": {}
+        })
+        
+        geojson_dict = {"type": "FeatureCollection", "features": features}
+        with open(output_fname, "wb") as f:
+            json.dump(geojson_dict, f)

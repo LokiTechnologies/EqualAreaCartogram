@@ -5,9 +5,7 @@
 import re
 import xml.etree.ElementTree as ET
 from math import sqrt
-
 from IPython.display import SVG, display
-
 
 class Chorogrid(object):
     def __init__(self, df, ids, colors, id_column='abbrev'):
@@ -53,12 +51,6 @@ class Chorogrid(object):
         self.svg = ET.Element('svg', xmlns="http://www.w3.org/2000/svg", version="1.1",
                               viewbox="0 0 %s %s" % (width, height))
 
-    def _draw_title(self, x, y):
-        if len(self.title) > 0:
-            font_style = self._dict2style(self.title_font_dict)
-            _ = ET.SubElement(self.svg, "text", id="title", x=str(x), y=str(y), style=font_style)
-            _.text = self.title
-
     def _determine_font_colors(self, kwargs):
         if 'font_colors' in kwargs.keys():
             fc = kwargs['font_colors']
@@ -83,29 +75,11 @@ class Chorogrid(object):
             return "{},{} {},{} {},{} {},{} {},{} {},{}".format(
                 x, y, x + ww, y, x + ww * 3 / 2, y - hh / 2, x + ww, y - hh, x, y - hh, x - ww / 2, y - hh / 2)
 
-    def done_and_overlay(self, other_chorogrid, show=True, save_filename=None):
-        svgstring = ET.tostring(self.svg).decode('utf-8')
-        svgstring = svgstring.replace('</svg>', ''.join(self.additional_svg) + '</svg>')
-        svgstring = svgstring.replace(">", ">\n")
-        svgstring = svgstring.replace("</svg>", "")
-        svgstring_overlaid = ET.tostring(other_chorogrid.svg).decode('utf-8')
-        svgstring_overlaid = svgstring_overlaid.replace('</svg>',
-                                                        ''.join(other_chorogrid.additional_svg) + '</svg>')
-        svgstring_overlaid = svgstring_overlaid.replace(">", ">\n")
-        svgstring_overlaid = re.sub('<svg.+?>', '', svgstring_overlaid)
-        svgstring += svgstring_overlaid
-        if save_filename is not None:
-            if save_filename[-4:] != '.svg':
-                save_filename += '.svg'
-            with open(save_filename, 'w+', encoding='utf-8') as f:
-                f.write(svgstring)
-        if show:
-            display(SVG(svgstring))
-
     def done(self, show=False, save_filename=None):
         svgstring = ET.tostring(self.svg).decode('utf-8')
         svgstring = svgstring.replace('</svg>', ''.join(self.additional_svg) + '</svg>')
         svgstring = svgstring.replace(">", ">\n")
+        self.svgstring = svgstring
         if save_filename is not None:
             if save_filename[-4:] != '.svg':
                 save_filename += '.svg'
@@ -143,6 +117,8 @@ class Chorogrid(object):
                             (self.df[y_column].max() - 1) *
                             spacing_dict['gutter'] +
                             spacing_dict['margin_bottom'])
+            self.total_width = total_width
+            self.total_height = total_height
         else:
             total_width = (spacing_dict['margin_left'] +
                            (self.df[x_column].max() * 0.75 + 0.25) *
@@ -156,6 +132,8 @@ class Chorogrid(object):
                             (self.df[y_column].max() - 1) *
                             spacing_dict['gutter'] +
                             spacing_dict['margin_bottom'])
+            self.total_width = total_width
+            self.total_height = total_height
         self._make_svg_top(total_width, total_height)
         w = spacing_dict['cell_width']
         for i, id_ in enumerate(self.df[self.id_column]):

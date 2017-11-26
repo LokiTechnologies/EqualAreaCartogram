@@ -1,5 +1,5 @@
 # EqualAreaCartogram
-A Python script that converts a Shapefile, GeoJSON, or CSV to an equal area cartogram SVG
+A Python script that converts a Shapefile, GeoJSON, or CSV to an equal area cartogram SVG or GeoJSON
 
 ### TL;DR
 Python script for creating Equal-Area Hexagonal Cartograms.
@@ -12,7 +12,8 @@ _Example_
 from eqcart import Cartogram
 #input_filepath can be the location of a GeoJSON, SHP, CSV, or Excel File
 cart = Cartogram(input_filepath, name_of_column_w_unique_ids, num_x_grid, num_y_grid)
-cart.make_hex_svg(output_filepath)
+cart.make_hex_svg(output_filepath) #for creating SVG
+cart.make_hex_geojson(output_filepath) #for creating GeoJSON
 ```
 
 For more details on usage, see [this notebook](https://github.com/rishsriv/equalareacartogram/blob/master/Demo.ipynb)
@@ -47,7 +48,7 @@ For details on implementation, see [this notebook](https://github.com/rishsriv/e
 4. Iterate 3. until all bins only have 1 point in them. This will lead to a matrix that is something like the image below
 ![Post-Shunt Grid](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/grid_post_shunt.png "Post-Shunt Grid")
 
-5. Convert the matrix obtained from point 4 into an SVG with hexagon polygons. The code for this is based on the excellent [chorogrid library](https://github.com/Prooffreader/chorogrid) by David Taylor.
+5. Convert the matrix obtained from point 4 into an SVG or GeoJSON with hexagon polygons. The code for this is based on the excellent [chorogrid library](https://github.com/Prooffreader/chorogrid) by David Taylor.
 ![Hex Map](./demo_images/map.svg)
 
 ### Motivation
