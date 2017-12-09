@@ -227,5 +227,5 @@ class Cartogram(object):
         })
         
         geojson_dict = {"type": "FeatureCollection", "features": features}
-        with open(output_fname, "wb") as f:
+        with open(output_fname, "w") as f:
             json.dump(geojson_dict, f)

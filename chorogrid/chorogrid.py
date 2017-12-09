@@ -83,7 +83,7 @@ class Chorogrid(object):
         if save_filename is not None:
             if save_filename[-4:] != '.svg':
                 save_filename += '.svg'
-            with open(save_filename, 'wb') as f:
+            with open(save_filename, 'w') as f:
                 f.write(svgstring.encode("utf-8"))
         if show is True:
             display(SVG(svgstring))
