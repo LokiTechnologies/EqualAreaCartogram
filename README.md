@@ -7,6 +7,9 @@ Python script for creating Equal-Area Hexagonal Cartograms.
 _Example_
 ![Dense Hexmap](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/demo_dense.png "Dense Hexmap")
 
+### Installation
+pip install git+https://github.com/rishsriv/EqualAreaCartogram/
+
 ### Usage
 ```python
 from eqcart import Cartogram
