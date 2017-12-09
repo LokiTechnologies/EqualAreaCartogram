@@ -174,7 +174,7 @@ class Cartogram(object):
             self.x_coords_points[self.point_position[point]['x_bin']].append(point)
             self.y_coords_points[self.point_position[point]['y_bin']].append(point)
 
-        for point, value in self.point_position.iteritems():
+        for point, value in self.point_position.items():
             if (str(value["x_bin"]) + "_" + str(value["y_bin"])) not in self.coord_points:
                 self.coord_points[str(value["x_bin"]) + "_" + str(value["y_bin"])] = []
             self.coord_points[str(value["x_bin"]) + "_" + str(value["y_bin"])].append(point)
