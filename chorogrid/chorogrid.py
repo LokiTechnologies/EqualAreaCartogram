@@ -6,6 +6,7 @@ import re
 import xml.etree.ElementTree as ET
 from math import sqrt
 from IPython.display import SVG, display
+import sys
 
 class Chorogrid(object):
     def __init__(self, df, ids, colors, id_column='abbrev'):
@@ -83,8 +84,12 @@ class Chorogrid(object):
         if save_filename is not None:
             if save_filename[-4:] != '.svg':
                 save_filename += '.svg'
-            with open(save_filename, 'w') as f:
-                f.write(svgstring.encode("utf-8"))
+            if sys.version_info[0] >= 3:
+                with open(save_filename, 'w', encoding='utf-8') as f:
+                    f.write(svgstring)
+            else:
+                with open(save_filename, 'w') as f:
+                    f.write(svgstring.encode('utf-8'))
         if show is True:
             display(SVG(svgstring))
 
