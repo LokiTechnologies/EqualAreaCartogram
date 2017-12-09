@@ -8,7 +8,7 @@ _Example_
 ![Dense Hexmap](https://raw.githubusercontent.com/rishsriv/equalareacartogram/master/demo_images/demo_dense.png "Dense Hexmap")
 
 ### Installation
-pip install git+https://github.com/rishsriv/EqualAreaCartogram/
+`pip install git+https://github.com/rishsriv/EqualAreaCartogram/`
 
 ### Usage
 ```python
