@@ -3,6 +3,7 @@ import pandas as pd
 from chorogrid import Chorogrid
 from bs4 import BeautifulSoup
 import json
+import os
 
 class Cartogram(object):
     """ An object which makes equal-area hexgrid cartograms, instantiated with:
@@ -193,6 +194,9 @@ class Cartogram(object):
             show: whether or not the output should be displayed in the ipython notebook
             draw_text: whether or not the id_col text should be drawn on the map
         """
+        
+        if "/" in output_fname and not os.path.isdir(output_fname[:output_fname.rfind('/')]): #check if outputfilepath directory exists
+            raise IOError('The directory specified does not exist')
         self._initialize_grid()
         self._populate_new_grid()
         cg = Chorogrid(self.df, self.df[self.index_col].tolist(), ['#eeeeee'] * len(self.df), id_column=self.index_col)
@@ -227,5 +231,9 @@ class Cartogram(object):
         })
         
         geojson_dict = {"type": "FeatureCollection", "features": features}
+        
+        if "/" in output_fname and not os.path.isdir(output_fname[:output_fname.rfind('/')]): #check if outputfilepath directory exists
+            raise IOError('The directory specified does not exist')
+        
         with open(output_fname, "w") as f:
             json.dump(geojson_dict, f)
