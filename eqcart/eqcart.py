@@ -195,7 +195,7 @@ class Cartogram(object):
             draw_text: whether or not the id_col text should be drawn on the map
         """
         
-        if "/" in output_fname and not os.path.isdir(output_fname[:output_fname.rfind('/')]): #check if outputfilepath directory exists
+        if output_fname is not None and "/" in output_fname and not os.path.isdir(output_fname[:output_fname.rfind('/')]): #check if outputfilepath directory exists
             raise IOError('The directory specified does not exist')
         self._initialize_grid()
         self._populate_new_grid()
